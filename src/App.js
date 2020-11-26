@@ -1,10 +1,9 @@
 import './App.css';
+import { Main } from './components';
 
-function App() {
+const App = () => {
   return (
-    <div>
-
-    </div>
+    <Main />
   );
 }
 
