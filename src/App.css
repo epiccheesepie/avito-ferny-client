@@ -1,3 +1,12 @@
+@font-face {
+    font-family: 'Helvetica Neue';
+    src: local('Helvetica Neue Heavy'), local('Helvetica-Neue-Heavy'),
+        url('./assets/HelveticaNeueCyr-Heavy.woff2') format('woff2'),
+        url('./assets/HelveticaNeueCyr-Heavy.woff') format('woff'),
+        url('./assets/HelveticaNeueCyr-Heavy.ttf') format('truetype');
+    font-style: normal;
+  }
+
 body {
     margin: 0;
     padding: 0;
