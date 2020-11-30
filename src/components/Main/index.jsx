@@ -1,5 +1,7 @@
 import React from 'react';
+import PerfectScrollbar from 'react-perfect-scrollbar';
 import './Main.css';
+import 'react-perfect-scrollbar/dist/css/styles.css';
 
 const conf = {
     background: '',
@@ -10,97 +12,37 @@ const conf = {
 
 const Main = _ => {
 
-    const [banner, setBanner] = React.useState(conf);
+    const [bannerConfig, setBannerConfig] = React.useState(conf);
+
     const handlerChangeText = (title,value) => {
-        setBanner( prev => {
+        setBannerConfig( prev => {
             return {
                 ...prev,
                 [title]: value
             };
         });
 
-        console.log(banner);
+        console.log(bannerConfig);
     };
-
-    const imgRef = React.useRef();
-    const bannerRef = React.useRef();
-    React.useEffect( () => {
-        const thumb = imgRef.current;
-        const slider = bannerRef.current;
-
-        thumb.onmousedown = function(event) {
-            event.preventDefault(); // предотвратить запуск выделения (действие браузера)
-      
-            let shiftX = event.clientX - thumb.getBoundingClientRect().left;
-            let shiftY = event.clientY - thumb.getBoundingClientRect().top;
-            // shiftY здесь не нужен, слайдер двигается только по горизонтали
-      
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-      
-            function onMouseMove(event) {
-              let newLeft = event.clientX - shiftX - slider.getBoundingClientRect().left;
-              let newTop = event.clientY - shiftY - slider.getBoundingClientRect().top;
-      
-              // курсор вышел из слайдера => оставить бегунок в его границах.
-              if (newLeft < 0) {
-                newLeft = 0;
-              }
-              let rightEdge = slider.offsetWidth - thumb.offsetWidth;
-              if (newLeft > rightEdge) {
-                newLeft = rightEdge;
-              }
-
-              if (newTop < 0) {
-                  newTop = 0;
-              }
-              let botEdge = slider.offsetHeight - thumb.offsetHeight;
-              if (newTop > botEdge) {
-                newTop = botEdge;
-              }
-
-              thumb.style.left = newLeft + 'px';
-              thumb.style.top = newTop + 'px';
-            }
-      
-            function onMouseUp() {
-              document.removeEventListener('mouseup', onMouseUp);
-              document.removeEventListener('mousemove', onMouseMove);
-            }
-      
-          };
-      
-          thumb.ondragstart = function() {
-            return false;
-          };
-
-    }, [imgRef]);
 
     return (
         <div className="content">
             <div className="left">
-                <div className="container">
-                    <Header />
-                    <Form 
-                        banner={banner}
-                        onChange={handlerChangeText}
-                    />
-                </div>
+                <PerfectScrollbar>
+                    <div className="container">
+                        <Header />
+                        <Form 
+                            bannerConfig={bannerConfig}
+                            onChange={handlerChangeText}
+                        />
+                    </div>
+                </PerfectScrollbar>
             </div>
 
             <div className="right">
-                <div ref={bannerRef} className="banner">
-                    <div ref={imgRef} className="banner__img">
-                        {/* <img src="./1.jpg" /> */}
-                        {banner.img && (
-                            <img src={banner.img} />
-                        )}
-                    </div>
-
-                    {banner.text && (
-                        <span className="banner__text">{banner.text}</span>
-                    )}
-                </div>
+                <Banner 
+                    bannerConfig={bannerConfig}
+                />
             </div>
         </div>
     );
@@ -114,9 +56,6 @@ const Header = _ => {
                 <img className="logo" src="https://static.avito.ru/@avito/bx-single-page-main/2.374.2/prod/web/resources/35f5a0d67b53.svg" />
             </div>
             <div className="header__text">
-                <span className="header__title">
-                    Banner Maker
-                </span>
                 <span className="header__desc">
                     Приложение-редактор, для создания баннеров для сайта Avito.
                 </span>
@@ -125,7 +64,7 @@ const Header = _ => {
     );
 };
 
-const Form = ({banner, onChange}) => {
+const Form = ({bannerConfig, onChange}) => {
 
     const [openBack, setOpenBack] = React.useState(false);
     const [openImg, setOpenImg] = React.useState(false);
@@ -146,7 +85,7 @@ const Form = ({banner, onChange}) => {
     return (
         <form className="form">
             <div className={`form__item ${openBack ? 'active' : ''}`}>
-                <span className="form__title" onClick={_ => setOpenBack(prev => !prev)}>
+                <span className="form__title button" onClick={_ => setOpenBack(prev => !prev)}>
                     Фон
                 </span>
                 {openBack && (
@@ -154,20 +93,21 @@ const Form = ({banner, onChange}) => {
                     <div className="form__item">
                         <span className="row__title">Цвет</span>
                         <div className="option">
-                            <input className="form__color" type="color" />
+                            <input className="form__color" type="color" onChange={(e) => onChange('background', e.target.value)} />
                         </div>
                     </div>
                     <div className="form__item">
                         <span className="row__title">Градиент</span>
                         <div className="option">
-                            <input className="form__color" type="color" />
+                            <input className="form__color form__gradient left-color" type="color" />
+                            <input className="form__color form__gradient right-color" type="color" />
                         </div>
                     </div>
                 </div>
                 )}
             </div>
             <div className={`form__item ${openImg ? 'active' : ''}`}>
-                <span className="form__title" onClick={_ => setOpenImg(prev => !prev)}>
+                <span className="form__title button" onClick={_ => setOpenImg(prev => !prev)}>
                     Картинка
                 </span>
                 {openImg && (
@@ -175,12 +115,12 @@ const Form = ({banner, onChange}) => {
                     <div className="form__item">
                         <div className="option">
                             <input id="file" className="form__file" type="file" accept="image/*,image/jpeg,image/png" onChange={(e) => handlerLoadImg(e)} />
-                            <label for="file" className="file-chooser">{fileName}</label>
+                            <label for="file" className="file-chooser button">{fileName}</label>
                         </div>
                     </div>
                     <div className="form__item">
                         <div className="option">
-                            <input className="form__text form__text--img" type="text" placeholder="Ссылка..." value={banner.img} onChange={(e) => onChange('img', e.target.value)} />
+                            <input className="form__text form__text--img" type="text" placeholder="Ссылка..." value={bannerConfig.img} onChange={(e) => onChange('img', e.target.value)} />
                         </div>
                     </div>
                 </div>
@@ -191,14 +131,14 @@ const Form = ({banner, onChange}) => {
                 text='Текст'
                 placeholder='Введите текст'
                 onChange={onChange}
-                value={banner.text}
+                value={bannerConfig.text}
             />
             <Text
                 title='link'
                 text='Ссылка'
                 placeholder='Введите ссылку'
                 onChange={onChange}
-                value={banner.link}
+                value={bannerConfig.link}
             />
         </form>
     );
@@ -210,7 +150,7 @@ const Text = ({title, text, placeholder, onChange, value}) => {
 
     return (
         <div className={`form__item ${isOpen ? 'active' : ''}`}>
-            <span className="form__title" onClick={_ => setIsOpen(prev => !prev)}>
+            <span className="form__title button" onClick={_ => setIsOpen(prev => !prev)}>
                 {text}
             </span>
             {isOpen && (
@@ -223,5 +163,94 @@ const Text = ({title, text, placeholder, onChange, value}) => {
         </div>
     );
 };
+
+ const Banner = ({bannerConfig}) => {
+
+    React.useEffect(_ => {
+        const decorationText = (text) => {
+            while (text.length > 30) {
+                let words = text.split(' ');
+                words.pop();
+                text = words.join(' ') + '...';
+            }
+    
+            return text;
+        };
+
+        const span = document.querySelector('.banner__text');
+        if (span) span.textContent = decorationText(bannerConfig.text);
+
+    },[bannerConfig.text]);
+
+    const imgRef = React.useRef();
+    const [posImg, setPosImg] = React.useState({
+        top: '0px',
+        left: '0px'
+    });
+    const handlerMouseDrag = (e) => {
+        e.preventDefault();
+        const img = e.currentTarget;
+        const banner = img.parentNode;
+        const left = e.clientX - img.getBoundingClientRect().left;
+        const top = e.clientY - img.getBoundingClientRect().top;
+
+        const onMouseMove = (e) => { 
+            let newLeft = e.clientX - left - banner.getBoundingClientRect().left;
+            let newTop = e.clientY - top - banner.getBoundingClientRect().top;
+
+            const deviation = 10; //погрешность заступа за блок баннера
+            const imgWidth = img.offsetWidth; //ширина изображения
+            const imgHeight = img.offsetHeight; //высота изображения
+            const bannerWidth = banner.offsetWidth; //ширина баннера
+            const bannerHeight = banner.offsetHeight; //высота баннера
+
+            const leftEdge = -imgWidth;
+            const topEdge = -imgHeight;
+            const rightEdge = bannerWidth;
+            const botEdge = bannerHeight;
+
+            if (newLeft < leftEdge + deviation) newLeft = 0;
+            if (newLeft > rightEdge - deviation) newLeft = rightEdge - imgWidth;
+
+            if (newTop < topEdge + deviation) newTop = 0;
+            if (newTop > botEdge - deviation) newTop = botEdge - imgHeight;
+
+            setPosImg( _ => {
+                return {
+                    top: newTop + 'px',
+                    left: newLeft + 'px'
+                };
+            });
+        }
+
+        const onMouseUp = () => {
+            document.removeEventListener('mouseup', onMouseUp);
+            document.removeEventListener('mousemove', onMouseMove);
+            img.classList.remove('drag-img');
+        }
+
+        img.classList.add('drag-img');
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
+    };
+
+    return (
+        <div className="banner" style={{backgroundColor: bannerConfig.background}}>
+            <div
+                className='banner__img'
+                style={posImg}
+                onDragStart={(e) => handlerMouseDrag(e)}
+            >
+                {bannerConfig.img && (
+                    <img src={bannerConfig.img} />
+                )}  
+            </div>
+
+            {bannerConfig.text && (
+                <span className="banner__text"></span>
+            )}
+        </div>
+    );
+ };
 
 export default Main;
