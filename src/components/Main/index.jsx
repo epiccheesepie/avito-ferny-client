@@ -90,17 +90,21 @@ const Form = ({bannerConfig, onChange}) => {
                 </span>
                 {openBack && (
                 <div className="form__container form__container--row">
-                    <div className="form__item">
+                    <label className="form__item button form__item--color">
                         <span className="row__title">Цвет</span>
                         <div className="option">
-                            <input className="form__color" type="color" onChange={(e) => onChange('background', e.target.value)} />
+                            <input className="form__color" type="color" value={bannerConfig.background  } onChange={(e) => onChange('background', e.target.value)} />
                         </div>
-                    </div>
-                    <div className="form__item">
+                    </label>
+                    <div className="form__item button form__item--color">
                         <span className="row__title">Градиент</span>
                         <div className="option">
-                            <input className="form__color form__gradient left-color" type="color" />
-                            <input className="form__color form__gradient right-color" type="color" />
+                            <div className="left-color">
+                                <input className="form__color form__gradient" type="color" />
+                            </div>
+                            <div className="right-color">
+                                <input className="form__color form__gradient" type="color" />
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -115,7 +119,7 @@ const Form = ({bannerConfig, onChange}) => {
                     <div className="form__item">
                         <div className="option">
                             <input id="file" className="form__file" type="file" accept="image/*,image/jpeg,image/png" onChange={(e) => handlerLoadImg(e)} />
-                            <label for="file" className="file-chooser button">{fileName}</label>
+                            <label for="file" className="button--file button">{fileName}</label>
                         </div>
                     </div>
                     <div className="form__item">
