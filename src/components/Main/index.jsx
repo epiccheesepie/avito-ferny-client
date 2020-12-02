@@ -3,22 +3,35 @@ import PerfectScrollbar from 'react-perfect-scrollbar';
 import './Main.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
 
-const conf = {
-    background: '',
-    img: '',
-    text: '',
-    link: ''
-};
-
 const Main = _ => {
 
-    const [bannerConfig, setBannerConfig] = React.useState(conf);
+    const [bannerConfig, setBannerConfig] = React.useState({});
 
     const handlerChangeText = (title,value) => {
         setBannerConfig( prev => {
             return {
                 ...prev,
                 [title]: value
+            };
+        });
+
+        console.log(bannerConfig);
+    };
+
+    const handlerChangeGradient = (e) => {
+        const { name, value } = e.target;
+        
+        setBannerConfig( prev => {
+            if (typeof prev.background === 'string') {
+                prev.background = {};
+            }
+
+            return {
+                ...prev,
+                background: {
+                    ...prev.background,
+                    [name]: value
+                }
             };
         });
 
@@ -34,6 +47,7 @@ const Main = _ => {
                         <Form 
                             bannerConfig={bannerConfig}
                             onChange={handlerChangeText}
+                            onChangeGradient={handlerChangeGradient}
                         />
                     </div>
                 </PerfectScrollbar>
@@ -64,10 +78,13 @@ const Header = _ => {
     );
 };
 
-const Form = ({bannerConfig, onChange}) => {
+const Form = ({bannerConfig, onChange, onChangeGradient}) => {
 
     const [openBack, setOpenBack] = React.useState(false);
     const [openImg, setOpenImg] = React.useState(false);
+    const [openText, setOpenText] = React.useState(false);
+    const [openLink, setOpenLink] = React.useState(false);
+    const [openExp, setOpenExp] = React.useState(false);
 
     const [fileName, setFileName] = React.useState('Загрузить...');
     const handlerLoadImg = (e) => {
@@ -82,6 +99,12 @@ const Form = ({bannerConfig, onChange}) => {
         }
     };
 
+    const handlerClickJson = _ => {
+        const parse = JSON.stringify(bannerConfig);
+        navigator.clipboard.writeText(parse);
+        alert('Конфигурация баннера скопирована в буфер обмена');
+    };
+
     return (
         <form className="form">
             <div className={`form__item ${openBack ? 'active' : ''}`}>
@@ -89,21 +112,32 @@ const Form = ({bannerConfig, onChange}) => {
                     Фон
                 </span>
                 {openBack && (
-                <div className="form__container form__container--row">
-                    <label className="form__item button form__item--color">
-                        <span className="row__title">Цвет</span>
-                        <div className="option">
-                            <input className="form__color" type="color" value={bannerConfig.background  } onChange={(e) => onChange('background', e.target.value)} />
-                        </div>
-                    </label>
-                    <div className="form__item button form__item--color">
-                        <span className="row__title">Градиент</span>
+                <div className="form__container">
+                    <Color 
+                        value={bannerConfig.background}
+                        title='background'
+                        onChange={onChange}
+                    />
+                    <div className="form__item--row button button--left button--disabledHover">
+                        <span className="row-title">Градиент</span>
                         <div className="option">
                             <div className="left-color">
-                                <input className="form__color form__gradient" type="color" />
+                                <input 
+                                    className="form__color"
+                                    type="color"
+                                    name="top"
+                                    value={bannerConfig.background ? bannerConfig.background.top : '#000'}
+                                    onChange={(e) => onChangeGradient(e)} 
+                                />
                             </div>
                             <div className="right-color">
-                                <input className="form__color form__gradient" type="color" />
+                                <input
+                                    className="form__color"
+                                    type="color"
+                                    name="bot"
+                                    value={bannerConfig.background ? bannerConfig.background.bot : '#000'}
+                                    onChange={(e) => onChangeGradient(e)}
+                                />
                             </div>
                         </div>
                     </div>
@@ -115,64 +149,115 @@ const Form = ({bannerConfig, onChange}) => {
                     Картинка
                 </span>
                 {openImg && (
-                <div className="form__container form__container--row">
-                    <div className="form__item">
+                <div className="form__container">
+                    <div className="form__item--row">
                         <div className="option">
                             <input id="file" className="form__file" type="file" accept="image/*,image/jpeg,image/png" onChange={(e) => handlerLoadImg(e)} />
-                            <label for="file" className="button--file button">{fileName}</label>
+                            <label for="file" className="button button--center">{fileName}</label>
                         </div>
                     </div>
-                    <div className="form__item">
-                        <div className="option">
-                            <input className="form__text form__text--img" type="text" placeholder="Ссылка..." value={bannerConfig.img} onChange={(e) => onChange('img', e.target.value)} />
-                        </div>
+                    <div className="form__item--row">
+                        <Text 
+                            placeholder="Ссылка..."
+                            value={bannerConfig.img}
+                            title="img"
+                            onChange={onChange}
+                        />
                     </div>
                 </div>
                 )}
             </div>
-            <Text
-                title='text'
-                text='Текст'
-                placeholder='Введите текст'
-                onChange={onChange}
-                value={bannerConfig.text}
-            />
-            <Text
-                title='link'
-                text='Ссылка'
-                placeholder='Введите ссылку'
-                onChange={onChange}
-                value={bannerConfig.link}
-            />
+            <div className={`form__item ${openText ? 'active' : ''}`}>
+                <span className="form__title button" onClick={_ => setOpenText(prev => !prev)}>
+                    Текст
+                </span>
+                {openText && (
+                <div className="form__container">
+                    <Color 
+                        value={bannerConfig.textColor}
+                        title="textColor"
+                        onChange={onChange}
+                    />
+                    <Text 
+                        placeholder="Введите текст"
+                        value={bannerConfig.text}
+                        title="text"
+                        onChange={onChange}
+                    />
+                </div>
+                )}
+            </div>
+            <div className={`form__item ${openLink ? 'active' : ''}`}>
+                <span className="form__title button" onClick={_ => setOpenLink(prev => !prev)}>
+                    Ссылка
+                </span>
+                {openLink && (
+                <div className="form__container">
+                    <Text 
+                        placeholder="Введите ссылку"
+                        value={bannerConfig.link}
+                        title="link"
+                        onChange={onChange}
+                    />
+                </div>
+                )}
+            </div>
+            <div className={`form__item ${openExp ? 'active' : ''}`}>
+                <span className="form__title button" onClick={_ => setOpenExp(prev => !prev)}>
+                    Экспорт
+                </span>
+                {openExp && (
+                <div className="form__container">
+                    <div className="form__item--row">
+                        <input className="button button--center" type="button" value="PNG" />
+                    </div>
+                    <div className="form__item--row">
+                        <input className="button button--center" type="button" value="HTML" />
+                    </div>
+                    <div className="form__item--row">
+                        <input className="button button--center" type="button" value="JSON" onClick={handlerClickJson} />
+                    </div>
+                </div>
+                )}
+            </div>
         </form>
     );
 };
 
-const Text = ({title, text, placeholder, onChange, value}) => {
-
-    const [isOpen, setIsOpen] = React.useState(false);
+const Color = ({value, title, onChange}) => {
 
     return (
-        <div className={`form__item ${isOpen ? 'active' : ''}`}>
-            <span className="form__title button" onClick={_ => setIsOpen(prev => !prev)}>
-                {text}
-            </span>
-            {isOpen && (
-            <div className="form__container">
-                <div className="option">
-                    <input className="form__text" type="text" placeholder={placeholder} value={value} onChange={(e) => onChange(title, e.target.value)} />
-                </div>
+        <label className="form__item--row button button--left">
+            <span className="row-title">Цвет</span>
+            <div className="option">
+                <input className="form__color" type="color" value={value} onChange={(e) => onChange(title, e.target.value)} />
             </div>
-            )}
+        </label>
+    );
+};
+
+const Text = ({placeholder, value, title, onChange}) => {
+
+    return (
+        <div className="option">
+            <input 
+                className="form__text"
+                type="text"
+                placeholder={placeholder}
+                value={value}
+                onChange={(e) => onChange(title, e.target.value)}
+            />
         </div>
     );
 };
 
- const Banner = ({bannerConfig}) => {
 
+const Banner = ({bannerConfig}) => {
+
+    const [bannerText, setBannerText] = React.useState(''); //рендер текста
     React.useEffect(_ => {
-        const decorationText = (text) => {
-            while (text.length > 30) {
+        const decorationText = (text='') => {
+            while (text.length > 26) {
                 let words = text.split(' ');
                 words.pop();
                 text = words.join(' ') + '...';
@@ -181,12 +266,27 @@ const Text = ({title, text, placeholder, onChange, value}) => {
             return text;
         };
 
-        const span = document.querySelector('.banner__text');
-        if (span) span.textContent = decorationText(bannerConfig.text);
+        const bannerText = decorationText(bannerConfig.text);
+        setBannerText(bannerText);
 
-    },[bannerConfig.text]);
+    }, [bannerConfig.text]);
 
-    const imgRef = React.useRef();
+    const [bannerBackground, setBannerBackground] = React.useState(''); //стиль фона
+    React.useEffect(_ => {
+        const { background } = bannerConfig;
+        let bannerBackground;
+
+        const typeBackground = typeof background;
+        if (typeBackground === 'object') {
+            bannerBackground = `linear-gradient(${background.top},${background.bot})`;
+        } else {
+            bannerBackground = background;
+        }
+
+        setBannerBackground(bannerBackground);
+
+    }, [bannerConfig.background]);
+
     const [posImg, setPosImg] = React.useState({
         top: '0px',
         left: '0px'
@@ -239,22 +339,24 @@ const Text = ({title, text, placeholder, onChange, value}) => {
     };
 
     return (
-        <div className="banner" style={{backgroundColor: bannerConfig.background}}>
+        <div className="banner" style={{background: bannerBackground}}>
             <div
                 className='banner__img'
                 style={posImg}
                 onDragStart={(e) => handlerMouseDrag(e)}
             >
                 {bannerConfig.img && (
-                    <img src={bannerConfig.img} />
+                    <img src={bannerConfig.img} alt="banner-img" />
                 )}  
             </div>
 
-            {bannerConfig.text && (
-                <span className="banner__text"></span>
+            {bannerText && (
+                <span className="banner__text" style={{color: bannerConfig.textColor}}>
+                    {bannerText}
+                </span>
             )}
         </div>
     );
- };
+};
 
 export default Main;
