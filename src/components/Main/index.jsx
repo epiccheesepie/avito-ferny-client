@@ -7,6 +7,24 @@ const Main = _ => {
 
     const [bannerConfig, setBannerConfig] = React.useState({});
 
+    const handlerClearConfig = _ => {
+        setBannerConfig({});
+    };
+
+    const handlerChangeImg = (file) => {
+
+        const reader = new FileReader();
+        reader.onloadend = _ => {
+            setBannerConfig( prev => {
+                return {
+                    ...prev,
+                    img: {dataURI: reader.result}
+                };
+            });
+        };
+        reader.readAsDataURL(file);
+    };
+
     const handlerChangeText = (title,value) => {
         setBannerConfig( prev => {
             return {
@@ -34,8 +52,6 @@ const Main = _ => {
                 }
             };
         });
-
-        console.log(bannerConfig);
     };
 
     return (
@@ -46,8 +62,10 @@ const Main = _ => {
                         <Header />
                         <Form 
                             bannerConfig={bannerConfig}
-                            onChange={handlerChangeText}
+                            onChangeText={handlerChangeText}
                             onChangeGradient={handlerChangeGradient}
+                            onChangeImg={handlerChangeImg}
+                            onClear={handlerClearConfig}
                         />
                     </div>
                 </PerfectScrollbar>
@@ -67,7 +85,7 @@ const Header = _ => {
     return (
         <div className="header">
             <div className="header__logo">
-                <img className="logo" src="https://static.avito.ru/@avito/bx-single-page-main/2.374.2/prod/web/resources/35f5a0d67b53.svg" />
+                <img className="logo" alt="logo" src="https://static.avito.ru/@avito/bx-single-page-main/2.374.2/prod/web/resources/35f5a0d67b53.svg" />
             </div>
             <div className="header__text">
                 <span className="header__desc">
@@ -78,32 +96,25 @@ const Header = _ => {
     );
 };
 
-const Form = ({bannerConfig, onChange, onChangeGradient}) => {
+const Form = ({bannerConfig, onChangeText, onChangeGradient, onChangeImg, onClear}) => {
 
     const [openBack, setOpenBack] = React.useState(false);
     const [openImg, setOpenImg] = React.useState(false);
     const [openText, setOpenText] = React.useState(false);
     const [openLink, setOpenLink] = React.useState(false);
     const [openExp, setOpenExp] = React.useState(false);
+    const [isClear, setIsClear] = React.useState(false);
 
-    const [fileName, setFileName] = React.useState('Загрузить...');
-    const handlerLoadImg = (e) => {
-        const loadName = e.target.value.split('\\').pop() || 'Загрузить...';
-        console.log(loadName);
-        if (loadName.length > 16) {
-            setFileName(_ => {
-                return loadName.substring(0, 16) + '...';
-            });
-        } else {
-            setFileName(loadName);
-        }
-    };
-
-    const handlerClickJson = _ => {
-        const parse = JSON.stringify(bannerConfig);
-        navigator.clipboard.writeText(parse);
-        alert('Конфигурация баннера скопирована в буфер обмена');
-    };
+    React.useEffect(_ => {
+        const isEmpty = (obj) => {
+            for (let key in obj) {
+                return false;
+            }
+            return true;
+        };
+        
+        (isEmpty(bannerConfig)) ? setIsClear(false) : setIsClear(true);
+    },[bannerConfig]);
 
     return (
         <form className="form">
@@ -116,9 +127,9 @@ const Form = ({bannerConfig, onChange, onChangeGradient}) => {
                     <Color 
                         value={bannerConfig.background}
                         title='background'
-                        onChange={onChange}
+                        onChange={onChangeText}
                     />
-                    <div className="form__item--row button button--left button--disabledHover">
+                    <div className="form__item--row button button--left button--disabled">
                         <span className="row-title">Градиент</span>
                         <div className="option">
                             <div className="left-color">
@@ -150,20 +161,15 @@ const Form = ({bannerConfig, onChange, onChangeGradient}) => {
                 </span>
                 {openImg && (
                 <div className="form__container">
-                    <div className="form__item--row">
-                        <div className="option">
-                            <input id="file" className="form__file" type="file" accept="image/*,image/jpeg,image/png" onChange={(e) => handlerLoadImg(e)} />
-                            <label for="file" className="button button--center">{fileName}</label>
-                        </div>
-                    </div>
-                    <div className="form__item--row">
-                        <Text 
-                            placeholder="Ссылка..."
-                            value={bannerConfig.img}
-                            title="img"
-                            onChange={onChange}
-                        />
-                    </div>
+                    <File 
+                        onChange={onChangeImg}
+                    />
+                    <Text 
+                        placeholder="Ссылка..."
+                        value={`${(typeof bannerConfig.img === 'object' || typeof bannerConfig.img === 'undefined') ? '' : bannerConfig.img}`}
+                        title="img"
+                        onChange={onChangeText}
+                    />
                 </div>
                 )}
             </div>
@@ -176,13 +182,13 @@ const Form = ({bannerConfig, onChange, onChangeGradient}) => {
                     <Color 
                         value={bannerConfig.textColor}
                         title="textColor"
-                        onChange={onChange}
+                        onChange={onChangeText}
                     />
                     <Text 
                         placeholder="Введите текст"
                         value={bannerConfig.text}
                         title="text"
-                        onChange={onChange}
+                        onChange={onChangeText}
                     />
                 </div>
                 )}
@@ -197,7 +203,7 @@ const Form = ({bannerConfig, onChange, onChangeGradient}) => {
                         placeholder="Введите ссылку"
                         value={bannerConfig.link}
                         title="link"
-                        onChange={onChange}
+                        onChange={onChangeText}
                     />
                 </div>
                 )}
@@ -207,20 +213,51 @@ const Form = ({bannerConfig, onChange, onChangeGradient}) => {
                     Экспорт
                 </span>
                 {openExp && (
-                <div className="form__container">
-                    <div className="form__item--row">
-                        <input className="button button--center" type="button" value="PNG" />
-                    </div>
-                    <div className="form__item--row">
-                        <input className="button button--center" type="button" value="HTML" />
-                    </div>
-                    <div className="form__item--row">
-                        <input className="button button--center" type="button" value="JSON" onClick={handlerClickJson} />
-                    </div>
-                </div>
+                    <Export bannerConfig={bannerConfig} />
                 )}
             </div>
+            {isClear && (
+                <div className="form__item clear">
+                    <span className="form__title button" onClick={_ => onClear()}>
+                        Очистить
+                    </span>
+                </div>
+            )}
         </form>
+    );
+};
+
+const File = ({onChange}) => {
+
+    const [fileName, setFileName] = React.useState('Загрузить...');
+    const handlerLoadImg = (e) => {
+        const loadName = e.target.value.split('\\').pop() || 'Загрузить...';
+        if (loadName.length > 16) {
+            setFileName(_ => {
+                return loadName.substring(0, 16) + '...';
+            });
+        } else {
+            setFileName(loadName);
+        }
+
+        const file = e.target.files[0];
+        return (file) ? onChange(file) : undefined;
+    };
+
+    return (
+        <div className="form__item--row">
+            <div className="option">
+                <label className="button button--center">
+                    {fileName}
+                    <input
+                        className="form__file"
+                        type="file"
+                        accept="image/*,image/jpeg,image/png"
+                        onChange={(e) => handlerLoadImg(e)} 
+                    />
+                </label>
+            </div>
+        </div>
     );
 };
 
@@ -239,20 +276,76 @@ const Color = ({value, title, onChange}) => {
 const Text = ({placeholder, value, title, onChange}) => {
 
     return (
-        <div className="option">
-            <input 
-                className="form__text"
-                type="text"
-                placeholder={placeholder}
-                value={value}
-                onChange={(e) => onChange(title, e.target.value)}
-            />
+        <div className="form__item--row">
+            <div className="option">
+                <input 
+                    className="form__text"
+                    type="text"
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={(e) => onChange(title, e.target.value)}
+                />
+            </div>
+        </div>
+    );
+};
+
+const Export = ({bannerConfig}) => {
+
+    const handlerClickPNG = _ => {
+        console.log('PNG');
+    };
+
+    const handlerClickHTML = _ => {
+        console.log('HTML');
+    };
+
+    const handlerClickJSON = _ => {
+        const parse = JSON.stringify(bannerConfig);
+        navigator.clipboard.writeText(parse);
+        alert('Конфигурация баннера скопирована в буфер обмена');
+    };
+
+    const methods = [
+        {name: 'PNG', handler: handlerClickPNG},
+        {name: 'HTML', handler: handlerClickHTML},
+        {name: 'JSON', handler: handlerClickJSON}
+    ];
+    const renderMethods = methods.map( ({name,handler}) => {
+        return (
+            <div key={name} className="form__item--row">
+                <input
+                    className="button button--center"
+                    type="button"
+                    value={name}
+                    onClick={handler}
+                />
+            </div>
+        );
+    });
+
+    return (
+        <div className="form__container">
+            {renderMethods}
         </div>
     );
 };
 
 
 const Banner = ({bannerConfig}) => {
+
+    const [bannerImg, setBannerImg] = React.useState(''); //рендер изображения
+    React.useEffect(_ => {
+        const { img } = bannerConfig;
+
+        let bannerImg;
+        (typeof img === 'object') ? bannerImg = img.dataURI : bannerImg = img;
+        setBannerImg(bannerImg);
+        setPosImg({
+            top: '0px',
+            left: '0px'
+        });
+    }, [bannerConfig.img]);
 
     const [bannerText, setBannerText] = React.useState(''); //рендер текста
     React.useEffect(_ => {
@@ -346,7 +439,7 @@ const Banner = ({bannerConfig}) => {
                 onDragStart={(e) => handlerMouseDrag(e)}
             >
                 {bannerConfig.img && (
-                    <img src={bannerConfig.img} alt="banner-img" />
+                    <img src={bannerImg} alt="banner-img" />
                 )}  
             </div>
 

@@ -108,6 +108,16 @@
 .form__item.active .form__title::after {
     transform: rotate(180deg);
 }
+.form__item.clear .button {
+    background-color: #d94646a8;
+}
+.form__item.clear .button:hover {
+    background-color: #ff6767a8;
+}
+.form__item.clear .form__title::after {
+    display: none;
+}
+
 .form__item--row {
     position: relative;
     width: 100%;
@@ -158,8 +168,11 @@
 .button--center:hover {
     box-shadow: var(--shadow-button-hover);
 }
-.button--disabledHover:hover {
-    box-shadow: none !important;
+.button--disabled {
+    cursor: default;
+}
+.button--disabled:hover {
+    box-shadow: none;
 }
 
 .option {
