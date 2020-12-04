@@ -262,26 +262,37 @@ input[type=color]::-moz-color-swatch {
     align-items: center;
     justify-content: center;
 }
+.banner-container {
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    overflow: hidden;
+}
 .banner {
     overflow: hidden;
     position: relative;
     width: 282px;
     height: 376px;
-    border-radius: 12px;
     padding: 28px;
     box-sizing: border-box;
     background-color: #fff;
-    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
 }
 .banner__text {
     font-family: 'Helvetica Neue', sans-serif;
-    position: absolute;
-    bottom: 30px;
     color: #000;
     font-weight: 700;
     font-size: 2.4em;
-    letter-spacing: -2.4px;
+    letter-spacing: -2px;
     line-height: 1.1;
+    overflow-wrap: break-word;
+    max-height: 126px;
+    overflow-y: hidden;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
 }
 .banner__img {
     cursor: move;

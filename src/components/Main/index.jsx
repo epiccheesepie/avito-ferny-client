@@ -2,9 +2,11 @@ import React from 'react';
 import PerfectScrollbar from 'react-perfect-scrollbar';
 import './Main.css';
 import 'react-perfect-scrollbar/dist/css/styles.css';
+import html2canvas from 'html2canvas';
 
 const Main = _ => {
 
+    const bannerRef = React.useRef();
     const [bannerConfig, setBannerConfig] = React.useState({});
 
     const handlerClearConfig = _ => {
@@ -33,7 +35,6 @@ const Main = _ => {
             };
         });
 
-        console.log(bannerConfig);
     };
 
     const handlerChangeGradient = (e) => {
@@ -62,6 +63,7 @@ const Main = _ => {
                         <Header />
                         <Form 
                             bannerConfig={bannerConfig}
+                            bannerRef={bannerRef}
                             onChangeText={handlerChangeText}
                             onChangeGradient={handlerChangeGradient}
                             onChangeImg={handlerChangeImg}
@@ -74,7 +76,11 @@ const Main = _ => {
             <div className="right">
                 <Banner 
                     bannerConfig={bannerConfig}
+                    bannerRef={bannerRef}
                 />
+                {/* <div className="preview" style={{marginLeft: '20px', lineHeight: '0'}}>
+                    <img src="1.png" />
+                </div> */}
             </div>
         </div>
     );
@@ -96,7 +102,7 @@ const Header = _ => {
     );
 };
 
-const Form = ({bannerConfig, onChangeText, onChangeGradient, onChangeImg, onClear}) => {
+const Form = ({bannerConfig, bannerRef, onChangeText, onChangeGradient, onChangeImg, onClear}) => {
 
     const [openBack, setOpenBack] = React.useState(false);
     const [openImg, setOpenImg] = React.useState(false);
@@ -213,7 +219,10 @@ const Form = ({bannerConfig, onChangeText, onChangeGradient, onChangeImg, onClea
                     Экспорт
                 </span>
                 {openExp && (
-                    <Export bannerConfig={bannerConfig} />
+                    <Export 
+                        bannerConfig={bannerConfig}
+                        bannerBlock={bannerRef.current} 
+                    />
                 )}
             </div>
             {isClear && (
@@ -290,14 +299,58 @@ const Text = ({placeholder, value, title, onChange}) => {
     );
 };
 
-const Export = ({bannerConfig}) => {
+const Export = ({bannerConfig, bannerBlock}) => {
 
     const handlerClickPNG = _ => {
-        console.log('PNG');
+        const namePng = _ => {
+            let name = '';
+            const symbols = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+            for (let i=0; i<4; i++) {
+                name += symbols.charAt(Math.floor(Math.random() * symbols.length));
+            }
+
+            return 'banner_' + name + '.png';
+        };
+        
+        html2canvas(bannerBlock).then(canvasBannerBlock => {
+
+            const nameToDownload = namePng();
+
+            if (window.navigator.msSaveBlob) {
+                window.navigator.msSaveBlob(canvasBannerBlock.msToBlob(), nameToDownload);
+            } else {
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.download = nameToDownload;
+                a.href = canvasBannerBlock.toDataURL('image/png');
+                
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        });
     };
 
     const handlerClickHTML = _ => {
-        console.log('HTML');
+        
+        html2canvas(bannerBlock).then(canvasBannerBlock => {
+
+            const dataURI = canvasBannerBlock.toDataURL('image/png');
+            let html;
+
+            if (bannerConfig.link) {
+                html = `<a href="${bannerConfig.link}">
+                    <img src="${dataURI}" />
+                </a>`;
+            } else {
+                html = `<img src="${dataURI}" />`;
+            }
+
+            navigator.clipboard.writeText(html);
+            alert('HTML разметка баннера скопирована в буфер обмена');
+
+        });
     };
 
     const handlerClickJSON = _ => {
@@ -332,7 +385,7 @@ const Export = ({bannerConfig}) => {
 };
 
 
-const Banner = ({bannerConfig}) => {
+const Banner = ({bannerConfig, bannerRef}) => {
 
     const [bannerImg, setBannerImg] = React.useState(''); //рендер изображения
     React.useEffect(_ => {
@@ -346,23 +399,6 @@ const Banner = ({bannerConfig}) => {
             left: '0px'
         });
     }, [bannerConfig.img]);
-
-    const [bannerText, setBannerText] = React.useState(''); //рендер текста
-    React.useEffect(_ => {
-        const decorationText = (text='') => {
-            while (text.length > 26) {
-                let words = text.split(' ');
-                words.pop();
-                text = words.join(' ') + '...';
-            }
-    
-            return text;
-        };
-
-        const bannerText = decorationText(bannerConfig.text);
-        setBannerText(bannerText);
-
-    }, [bannerConfig.text]);
 
     const [bannerBackground, setBannerBackground] = React.useState(''); //стиль фона
     React.useEffect(_ => {
@@ -432,22 +468,24 @@ const Banner = ({bannerConfig}) => {
     };
 
     return (
-        <div className="banner" style={{background: bannerBackground}}>
-            <div
-                className='banner__img'
-                style={posImg}
-                onDragStart={(e) => handlerMouseDrag(e)}
-            >
+        <div className="banner-container">
+            <div ref={bannerRef} className="banner" style={{background: bannerBackground}}>
                 {bannerConfig.img && (
-                    <img src={bannerImg} alt="banner-img" />
-                )}  
-            </div>
+                    <div
+                        className='banner__img'
+                        style={posImg}
+                        onDragStart={(e) => handlerMouseDrag(e)}
+                    >
+                        <img src={bannerImg} alt="banner-img" /> 
+                    </div>
+                )}
 
-            {bannerText && (
-                <span className="banner__text" style={{color: bannerConfig.textColor}}>
-                    {bannerText}
-                </span>
-            )}
+                {bannerConfig.text && (
+                    <span className="banner__text" style={{color: bannerConfig.textColor}}>
+                        {bannerConfig.text}
+                    </span>
+                )}
+            </div>
         </div>
     );
 };
