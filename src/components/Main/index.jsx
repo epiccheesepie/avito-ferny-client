@@ -13,21 +13,30 @@ const Main = _ => {
         setBannerConfig({});
     };
 
-    const handlerChangeImg = (file) => {
+    const handlerChangeImg = (img) => {
 
-        const reader = new FileReader();
-        reader.onloadend = _ => {
+        if (typeof img === 'string') {
             setBannerConfig( prev => {
                 return {
                     ...prev,
-                    img: {dataURI: reader.result}
+                    img
                 };
             });
-        };
-        reader.readAsDataURL(file);
+        } else if (typeof img === 'object') {
+            const reader = new FileReader();
+            reader.onloadend = _ => {
+                setBannerConfig( prev => {
+                    return {
+                        ...prev,
+                        img: reader.result
+                    };
+                });
+            };
+            reader.readAsDataURL(img);
+        }
     };
 
-    const handlerChangeText = (title,value) => {
+    const handlerChangeText = (value,title) => {
         setBannerConfig( prev => {
             return {
                 ...prev,
@@ -35,24 +44,6 @@ const Main = _ => {
             };
         });
 
-    };
-
-    const handlerChangeGradient = (e) => {
-        const { name, value } = e.target;
-        
-        setBannerConfig( prev => {
-            if (typeof prev.background === 'string') {
-                prev.background = {};
-            }
-
-            return {
-                ...prev,
-                background: {
-                    ...prev.background,
-                    [name]: value
-                }
-            };
-        });
     };
 
     return (
@@ -65,7 +56,6 @@ const Main = _ => {
                             bannerConfig={bannerConfig}
                             bannerRef={bannerRef}
                             onChangeText={handlerChangeText}
-                            onChangeGradient={handlerChangeGradient}
                             onChangeImg={handlerChangeImg}
                             onClear={handlerClearConfig}
                         />
@@ -74,13 +64,16 @@ const Main = _ => {
             </div>
 
             <div className="right">
-                <Banner 
-                    bannerConfig={bannerConfig}
+                <Banner
+                    background={bannerConfig.background}
+                    text={bannerConfig.text}
+                    textColor={bannerConfig.textColor}
+                    img={bannerConfig.img}
                     bannerRef={bannerRef}
                 />
-                {/* <div className="preview" style={{marginLeft: '20px', lineHeight: '0'}}>
+                <div className="preview" style={{marginLeft: '20px', lineHeight: '0'}}>
                     <img src="1.png" />
-                </div> */}
+                </div>
             </div>
         </div>
     );
@@ -102,129 +95,128 @@ const Header = _ => {
     );
 };
 
-const Form = ({bannerConfig, bannerRef, onChangeText, onChangeGradient, onChangeImg, onClear}) => {
+const Filter = ({title, children}) => {
 
-    const [openBack, setOpenBack] = React.useState(false);
-    const [openImg, setOpenImg] = React.useState(false);
-    const [openText, setOpenText] = React.useState(false);
-    const [openLink, setOpenLink] = React.useState(false);
-    const [openExp, setOpenExp] = React.useState(false);
+    const [isOpen, setIsOpen] = React.useState(false);
+
+    return (
+        <div className={`form__item ${isOpen ? 'active' : ''}`}>
+            <span className="form__title button" onClick={_ => setIsOpen(prev => !prev)}>
+                {title}
+            </span>
+            {isOpen && (
+            <div className="form__container">
+                {children}
+            </div>
+            )}
+        </div>
+    );
+};
+
+const Form = ({bannerConfig, bannerRef, onChangeText, onChangeImg, onClear}) => {
+
     const [isClear, setIsClear] = React.useState(false);
-
     React.useEffect(_ => {
-        const isEmpty = (obj) => {
-            for (let key in obj) {
-                return false;
-            }
-            return true;
-        };
-        
-        (isEmpty(bannerConfig)) ? setIsClear(false) : setIsClear(true);
+        const isEmpty = (obj) => Object.keys(obj).length === 0;
+        setIsClear(!isEmpty(bannerConfig));
+
     },[bannerConfig]);
+
+    const [imgLink, setImgLink] = React.useState('');
+    const handlerTextImg = (text) => {
+        setImgLink(text);
+        setFileName('Загрузить...')
+        onChangeImg(text);
+    };
+
+    const [fileName, setFileName] = React.useState('Загрузить...');
+    const handlerLoadImg = (e) => {
+        const loadName = e.target.value.split('\\').pop() || 'Загрузить...';
+        if (loadName.length > 16) {
+            setFileName(loadName.substring(0, 16) + '...');
+        } else {
+            setFileName(loadName);
+        }
+
+        setImgLink('');
+
+        const file = e.target.files[0];
+        return (file) ? onChangeImg(file) : undefined;
+    };
+
+    const [gradient, setGradient] = React.useState({
+        top: '',
+        bot: ''
+    });
+    const handlerChangeGradient = (e) => {
+        const { name, value } = e.target;
+        setGradient( prev => {
+            return {
+                ...prev,
+                [name]: value
+            };
+        });
+        
+        if (gradient.top && gradient.bot) {
+            const linearGradient = `linear-gradient(${gradient.top},${gradient.bot})`;
+            onChangeText(linearGradient, 'background');
+        }
+    };
+    
 
     return (
         <form className="form">
-            <div className={`form__item ${openBack ? 'active' : ''}`}>
-                <span className="form__title button" onClick={_ => setOpenBack(prev => !prev)}>
-                    Фон
-                </span>
-                {openBack && (
-                <div className="form__container">
-                    <Color 
-                        value={bannerConfig.background}
-                        title='background'
-                        onChange={onChangeText}
-                    />
-                    <div className="form__item--row button button--left button--disabled">
-                        <span className="row-title">Градиент</span>
-                        <div className="option">
-                            <div className="left-color">
-                                <input 
-                                    className="form__color"
-                                    type="color"
-                                    name="top"
-                                    value={bannerConfig.background ? bannerConfig.background.top : '#000'}
-                                    onChange={(e) => onChangeGradient(e)} 
-                                />
-                            </div>
-                            <div className="right-color">
-                                <input
-                                    className="form__color"
-                                    type="color"
-                                    name="bot"
-                                    value={bannerConfig.background ? bannerConfig.background.bot : '#000'}
-                                    onChange={(e) => onChangeGradient(e)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                )}
-            </div>
-            <div className={`form__item ${openImg ? 'active' : ''}`}>
-                <span className="form__title button" onClick={_ => setOpenImg(prev => !prev)}>
-                    Картинка
-                </span>
-                {openImg && (
-                <div className="form__container">
-                    <File 
-                        onChange={onChangeImg}
-                    />
-                    <Text 
-                        placeholder="Ссылка..."
-                        value={`${(typeof bannerConfig.img === 'object' || typeof bannerConfig.img === 'undefined') ? '' : bannerConfig.img}`}
-                        title="img"
-                        onChange={onChangeText}
-                    />
-                </div>
-                )}
-            </div>
-            <div className={`form__item ${openText ? 'active' : ''}`}>
-                <span className="form__title button" onClick={_ => setOpenText(prev => !prev)}>
-                    Текст
-                </span>
-                {openText && (
-                <div className="form__container">
-                    <Color 
-                        value={bannerConfig.textColor}
-                        title="textColor"
-                        onChange={onChangeText}
-                    />
-                    <Text 
-                        placeholder="Введите текст"
-                        value={bannerConfig.text}
-                        title="text"
-                        onChange={onChangeText}
-                    />
-                </div>
-                )}
-            </div>
-            <div className={`form__item ${openLink ? 'active' : ''}`}>
-                <span className="form__title button" onClick={_ => setOpenLink(prev => !prev)}>
-                    Ссылка
-                </span>
-                {openLink && (
-                <div className="form__container">
-                    <Text 
-                        placeholder="Введите ссылку"
-                        value={bannerConfig.link}
-                        title="link"
-                        onChange={onChangeText}
-                    />
-                </div>
-                )}
-            </div>
-            <div className={`form__item ${openExp ? 'active' : ''}`}>
-                <span className="form__title button" onClick={_ => setOpenExp(prev => !prev)}>
-                    Экспорт
-                </span>
-                {openExp && (
-                    <Export 
-                        bannerConfig={bannerConfig}
-                        bannerBlock={bannerRef.current} 
-                    />
-                )}
-            </div>
+            <Filter title='Фон'>
+                <Color 
+                    value={bannerConfig.background}
+                    title='background'
+                    onChange={onChangeText}
+                />
+                <Gradient 
+                    onChange={handlerChangeGradient}
+                    top={gradient.top}
+                    bot={gradient.bot}
+                />
+            </Filter>
+            <Filter title='Картинка'>
+                <File 
+                    onChange={handlerLoadImg}
+                    fileName={fileName}
+                />
+                <Text 
+                    placeholder="Ссылка..."
+                    value={imgLink}
+                    title="img"
+                    onChange={handlerTextImg}
+                />
+            </Filter>
+            <Filter title="Текст">
+                <Color 
+                    value={bannerConfig.textColor}
+                    title="textColor"
+                    onChange={onChangeText}
+                />
+                <Text 
+                    placeholder="Введите текст"
+                    value={bannerConfig.text}
+                    title="text"
+                    onChange={onChangeText}
+                />
+            </Filter>
+            <Filter title="Ссылка">
+                <Text 
+                    placeholder="Введите ссылку"
+                    value={bannerConfig.link}
+                    title="link"
+                    onChange={onChangeText}
+                />
+            </Filter>
+            <Filter title="Экспорт">
+                <Export 
+                    bannerConfig={bannerConfig}
+                    bannerBlock={bannerRef.current} 
+                />
+            </Filter>
             {isClear && (
                 <div className="form__item clear">
                     <span className="form__title button" onClick={_ => onClear()}>
@@ -236,22 +228,7 @@ const Form = ({bannerConfig, bannerRef, onChangeText, onChangeGradient, onChange
     );
 };
 
-const File = ({onChange}) => {
-
-    const [fileName, setFileName] = React.useState('Загрузить...');
-    const handlerLoadImg = (e) => {
-        const loadName = e.target.value.split('\\').pop() || 'Загрузить...';
-        if (loadName.length > 16) {
-            setFileName(_ => {
-                return loadName.substring(0, 16) + '...';
-            });
-        } else {
-            setFileName(loadName);
-        }
-
-        const file = e.target.files[0];
-        return (file) ? onChange(file) : undefined;
-    };
+const File = ({onChange, fileName}) => {
 
     return (
         <div className="form__item--row">
@@ -262,9 +239,38 @@ const File = ({onChange}) => {
                         className="form__file"
                         type="file"
                         accept="image/*,image/jpeg,image/png"
-                        onChange={(e) => handlerLoadImg(e)} 
+                        onChange={(e) => onChange(e)} 
                     />
                 </label>
+            </div>
+        </div>
+    );
+};
+
+const Gradient = ({onChange, top, bot}) => {
+
+    return (
+        <div className="form__item--row button button--left button--disabled">
+            <span className="row-title">Градиент</span>
+            <div className="option">
+                <div className="left-color">
+                    <input 
+                        className="form__color"
+                        type="color"
+                        name="top"
+                        value={top}
+                        onChange={(e) => onChange(e)} 
+                    />
+                </div>
+                <div className="right-color">
+                    <input
+                        className="form__color"
+                        type="color"
+                        name="bot"
+                        value={bot}
+                        onChange={(e) => onChange(e)}
+                    />
+                </div>
             </div>
         </div>
     );
@@ -276,7 +282,11 @@ const Color = ({value, title, onChange}) => {
         <label className="form__item--row button button--left">
             <span className="row-title">Цвет</span>
             <div className="option">
-                <input className="form__color" type="color" value={value} onChange={(e) => onChange(title, e.target.value)} />
+                <input className="form__color"
+                    type="color"
+                    value={value}
+                    onChange={(e) => onChange(e.target.value, title)}
+                />
             </div>
         </label>
     );
@@ -292,7 +302,7 @@ const Text = ({placeholder, value, title, onChange}) => {
                     type="text"
                     placeholder={placeholder}
                     value={value}
-                    onChange={(e) => onChange(title, e.target.value)}
+                    onChange={(e) => onChange(e.target.value, title)}
                 />
             </div>
         </div>
@@ -364,64 +374,57 @@ const Export = ({bannerConfig, bannerBlock}) => {
         {name: 'HTML', handler: handlerClickHTML},
         {name: 'JSON', handler: handlerClickJSON}
     ];
-    const renderMethods = methods.map( ({name,handler}) => {
-        return (
-            <div key={name} className="form__item--row">
-                <input
-                    className="button button--center"
-                    type="button"
-                    value={name}
-                    onClick={handler}
-                />
-            </div>
-        );
-    });
 
     return (
-        <div className="form__container">
-            {renderMethods}
+        <React.Fragment>
+            {methods.map(({name, handler}) => {
+                return (
+                    <ButtonExport
+                        key={name}
+                        name={name}
+                        onClick={handler}
+                    />
+                );
+            })}
+        </React.Fragment>
+    );
+};
+
+const ButtonExport = ({name,onClick}) => {
+
+    return (
+        <div className="form__item--row">
+            <input
+                className="button button--center"
+                type="button"
+                value={name}
+                onClick={onClick}
+            />
         </div>
     );
 };
 
 
-const Banner = ({bannerConfig, bannerRef}) => {
+const Banner = ({background, text, textColor, img, bannerRef}) => {
 
-    const [bannerImg, setBannerImg] = React.useState(''); //рендер изображения
     React.useEffect(_ => {
-        const { img } = bannerConfig;
-
-        let bannerImg;
-        (typeof img === 'object') ? bannerImg = img.dataURI : bannerImg = img;
-        setBannerImg(bannerImg);
         setPosImg({
             top: '0px',
             left: '0px'
         });
-    }, [bannerConfig.img]);
-
-    const [bannerBackground, setBannerBackground] = React.useState(''); //стиль фона
-    React.useEffect(_ => {
-        const { background } = bannerConfig;
-        let bannerBackground;
-
-        const typeBackground = typeof background;
-        if (typeBackground === 'object') {
-            bannerBackground = `linear-gradient(${background.top},${background.bot})`;
-        } else {
-            bannerBackground = background;
-        }
-
-        setBannerBackground(bannerBackground);
-
-    }, [bannerConfig.background]);
+    }, [img]);
 
     const [posImg, setPosImg] = React.useState({
         top: '0px',
         left: '0px'
     });
+
+    const [isDragable, setIsDragable] = React.useState(false);
+
     const handlerMouseDrag = (e) => {
         e.preventDefault();
+        setIsDragable(true);
+
         const img = e.currentTarget;
         const banner = img.parentNode;
         const left = e.clientX - img.getBoundingClientRect().left;
@@ -459,30 +462,29 @@ const Banner = ({bannerConfig, bannerRef}) => {
         const onMouseUp = () => {
             document.removeEventListener('mouseup', onMouseUp);
             document.removeEventListener('mousemove', onMouseMove);
-            img.classList.remove('drag-img');
+            setIsDragable(false);
         }
 
-        img.classList.add('drag-img');
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
     };
 
     return (
         <div className="banner-container">
-            <div ref={bannerRef} className="banner" style={{background: bannerBackground}}>
-                {bannerConfig.img && (
+            <div ref={bannerRef} className="banner" style={{background}}>
+                {img && (
                     <div
-                        className='banner__img'
+                        className={`banner__img ${isDragable ? 'drag-img' : ''}`}
                         style={posImg}
                         onDragStart={(e) => handlerMouseDrag(e)}
                     >
-                        <img src={bannerImg} alt="banner-img" /> 
+                        <img src={img} alt="banner-img" /> 
                     </div>
                 )}
 
-                {bannerConfig.text && (
-                    <span className="banner__text" style={{color: bannerConfig.textColor}}>
-                        {bannerConfig.text}
+                {text && (
+                    <span className="banner__text" style={{color: textColor}}>
+                        {text}
                     </span>
                 )}
             </div>
