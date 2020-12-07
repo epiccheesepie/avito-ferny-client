@@ -1,0 +1,47 @@
+.banner-container {
+    box-shadow: var(--shadow);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.banner {
+    overflow: hidden;
+    position: relative;
+    width: 282px;
+    height: 376px;
+    padding: 28px;
+    box-sizing: border-box;
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+.banner__text {
+    font-family: 'Helvetica Neue', sans-serif;
+    color: #000;
+    font-weight: 700;
+    font-size: 2.4em;
+    letter-spacing: -2px;
+    line-height: 1.1;
+    overflow-wrap: break-word;
+    max-height: 126px;
+    overflow-y: hidden;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+}
+.banner__img {
+    cursor: move;
+    position: absolute;
+    line-height: 0;
+}
+.banner__img.img--dragging::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    border: 2px dashed #202020;
+    box-sizing: border-box;
+    background-color: rgba(0,0,0,.2);
+}

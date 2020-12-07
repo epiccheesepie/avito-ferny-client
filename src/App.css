@@ -5,22 +5,6 @@
         url('./assets/HelveticaNeueCyr-Heavy.woff') format('woff'),
         url('./assets/HelveticaNeueCyr-Heavy.ttf') format('truetype');
     font-style: normal;
-  }
-
-body {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 16px;
-    letter-spacing: 1.2px;
-    line-height: 1;
-
-    min-width: 920px;
-    min-height: 400px;
-}
-html, #root {
-    height: 100%;
 }
 input {
     outline: none;

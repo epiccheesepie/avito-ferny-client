@@ -1,0 +1,19 @@
+.header {
+    padding: 0 12px 20px 12px;
+    background-color: #eee;
+    color: #000;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+}
+.header__desc {
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+.header__logo {
+    padding-top: 8px;
+    background-color: #eee;
+    border-radius: 12px;
+}
+.logo {
+    height: 64px;
+}

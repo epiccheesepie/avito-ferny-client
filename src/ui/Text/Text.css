@@ -1,0 +1,21 @@
+.form__text {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 0.9em;
+    color: #000;
+    border: none;
+    width: 100%;
+    background: none;
+    outline: none;
+    box-sizing: border-box;
+    border-bottom: 1px solid var(--border-color);
+    padding-left: 8px;
+    height: 48px;
+    transition: .4s;
+}
+.form__text::placeholder {
+    color: #606060;
+}
+.form__text:focus {
+    border-bottom: 1px solid var(--border-color-hover);
+}

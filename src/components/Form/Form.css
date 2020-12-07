@@ -1,0 +1,116 @@
+.form {
+    font-size: 1.6em;
+    padding: 40px 0;
+}
+.form__item {
+    position: relative;
+    margin-bottom: 20px;
+}
+.form__item.active {
+    margin-bottom: 32px;
+}
+.form__item:last-child {
+    margin-bottom: 0;
+}
+.form__item.active .button, .button:hover {
+    background-color: #21a4f7;
+}
+.form__item.active .form__title::after {
+    transform: rotate(180deg);
+}
+.form__item.clear .button {
+    background-color: #d94646a8;
+}
+.form__item.clear .button:hover {
+    background-color: #ff6767a8;
+}
+.form__item.clear .form__title::after {
+    display: none;
+}
+.form__item--small {
+    position: relative;
+    width: 100%;
+    margin-right: 30px;
+}
+.form__item--small:last-child {
+    margin-right: 0;
+}
+.form__item--small::before {
+    right: -15px;
+    content: "";
+    position: absolute;
+    top: calc(50% - 22px);
+    height: 44px;
+    width: 1px;
+    background-color: var(--border-color);
+}
+.form__item--small:last-child::before {
+    display: none;
+}
+
+.form__title {
+    font-weight: 700;
+    font-size: 1.2em;
+    height: 56px;
+    padding: 0 30px 0 20px;
+}
+.form__title::after {
+    content: "";
+    position: relative;
+    margin-left: 20px;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-top: 12px solid #eee;
+}
+
+.form__container {
+    margin-top: 8px;
+    display: flex;
+    padding: 20px;
+    background-color: #eee;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+.option {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    line-height: 0;
+}
+
+
+.button {
+    font-family: 'Montserrat', sans-serif;
+    color: #eee;
+    cursor: pointer;
+    transition: .2s;
+    border-radius: 30px;
+    border: 1px solid rgba(255,255,255,.44);
+    display: inline-flex;
+    align-items: center;
+    background-color: rgba(255,255,255,.12)
+}
+.button--center {
+    justify-content: center;
+}
+.button--left .small-title {
+    padding-left: 20px;
+}
+.button--center, .button--left {
+    font-size: 0.7em;
+    height: 48px;
+    width: 100%;
+    border: 1px solid rgba(0,0,0,.2);
+    background: #fff !important;
+    color: #000;
+}
+.button--left:hover,
+.button--center:hover {
+    box-shadow: var(--shadow-button-hover);
+}
+.button--disabled {
+    cursor: default;
+}
+.button--disabled:hover {
+    box-shadow: none;
+}
