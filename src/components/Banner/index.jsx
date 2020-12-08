@@ -1,7 +1,7 @@
 import React from 'react';
 import './Banner.css';
 
-const Banner = ({background, text, textColor, img, bannerRef}) => {
+const Banner = ({background, text, textColor, img, bannerRef, bannerTextRef}) => {
 
     React.useEffect(_ => {
         setPosImg({
@@ -79,7 +79,7 @@ const Banner = ({background, text, textColor, img, bannerRef}) => {
                 )}
 
                 {text && (
-                    <span className="banner__text" style={{color: textColor}}>
+                    <span ref={bannerTextRef} className="banner__text" style={{color: textColor}}>
                         {text}
                     </span>
                 )}

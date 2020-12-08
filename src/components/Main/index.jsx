@@ -10,6 +10,7 @@ import { Header } from '../../ui';
 const Main = _ => {
 
     const bannerRef = React.useRef();
+    const bannerTextRef = React.useRef();
     const [bannerConfig, setBannerConfig] = React.useState({});
 
     const handlerClearConfig = _ => {
@@ -58,6 +59,7 @@ const Main = _ => {
                         <Form 
                             bannerConfig={bannerConfig}
                             bannerRef={bannerRef}
+                            bannerTextRef={bannerTextRef}
                             onChangeValue={handlerChangeValue}
                             onChangeImg={handlerChangeImg}
                             onClear={handlerClearConfig}
@@ -73,6 +75,7 @@ const Main = _ => {
                     textColor={bannerConfig.textColor}
                     img={bannerConfig.img}
                     bannerRef={bannerRef}
+                    bannerTextRef={bannerTextRef}
                 />
             </div>
         </div>
