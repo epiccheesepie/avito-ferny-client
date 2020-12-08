@@ -5,7 +5,7 @@ import { Settinger, Color, File, Gradient, Text } from '../../ui';
 import { Export } from '..';
 import { isEmpty } from '../../utils';
 
-const Form = ({bannerConfig, bannerRef, bannerTextRef, onChangeValue, onChangeImg, onClear}) => {
+const Form = ({bannerConfig, bannerRef, onChangeValue, onChangeImg, onClear}) => {
 
     const defaultFileName = 'Загрузить...'; 
     const defaultGradient = {top: null, bot: null};
@@ -123,7 +123,6 @@ const Form = ({bannerConfig, bannerRef, bannerTextRef, onChangeValue, onChangeIm
                 <Export 
                     bannerConfig={bannerConfig}
                     bannerBlock={bannerRef.current}
-                    bannerText={bannerTextRef.current}
                     disabled={isEmpty(bannerConfig)}
                 />
             </Settinger>
