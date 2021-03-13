@@ -1,7 +1,7 @@
 import React from 'react';
 import './Banner.css';
 
-const Banner = ({background, text, textColor, img, bannerRef}) => {
+const Banner = ({background, height, width, text, textColor, img, bannerRef}) => {
 
     React.useEffect(_ => {
         setPosImg({
@@ -65,9 +65,15 @@ const Banner = ({background, text, textColor, img, bannerRef}) => {
         document.addEventListener('mouseup', onMouseUp);
     };
 
+    const style = {
+        background,
+        height: `${height ? height+'px' : '376px'}`,
+        width: `${width ? width+'px' : '282px'}`
+    };
+
     return (
         <div className="banner-container">
-            <div ref={bannerRef} className="banner" style={{background}}>
+            <div ref={bannerRef} className="banner" style={style}>
                 {img && (
                     <div
                         className={`banner__img ${isDragable ? 'img--dragging' : ''}`}

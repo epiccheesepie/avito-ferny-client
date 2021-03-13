@@ -1,11 +1,6 @@
 import React from 'react';
-import PerfectScrollbar from 'react-perfect-scrollbar';
-
 import './Main.css';
-import 'react-perfect-scrollbar/dist/css/styles.css';
-
 import { Form, Banner } from '..';
-import { Header } from '../../ui';
 
 const Main = _ => {
 
@@ -14,6 +9,8 @@ const Main = _ => {
 
     const handlerClearConfig = _ => {
         setBannerConfig({});
+
+        console.log(bannerConfig);
     };
 
     const handlerChangeImg = (img) => {
@@ -39,7 +36,7 @@ const Main = _ => {
         }
     };
 
-    const handlerChangeValue = (title,value) => {
+    const handlerChangeValue = (title) => (value) => {
         setBannerConfig( prev => {
             return {
                 ...prev,
@@ -52,22 +49,21 @@ const Main = _ => {
     return (
         <div className="content">
             <div className="left">
-                <PerfectScrollbar>
-                    <div className="container">
-                        <Header />
-                        <Form 
-                            bannerConfig={bannerConfig}
-                            bannerRef={bannerRef}
-                            onChangeValue={handlerChangeValue}
-                            onChangeImg={handlerChangeImg}
-                            onClear={handlerClearConfig}
-                        />
-                    </div>
-                </PerfectScrollbar>
+                <div className="container">
+                    <Form 
+                        bannerConfig={bannerConfig}
+                        bannerRef={bannerRef}
+                        onChangeValue={handlerChangeValue}
+                        onChangeImg={handlerChangeImg}
+                        onClear={handlerClearConfig}
+                    />
+                </div>
             </div>
 
             <div className="right">
                 <Banner
+                    height={bannerConfig.height}
+                    width={bannerConfig.width}
                     background={bannerConfig.background}
                     text={bannerConfig.text}
                     textColor={bannerConfig.textColor}

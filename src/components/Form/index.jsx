@@ -63,7 +63,7 @@ const Form = ({bannerConfig, bannerRef, onChangeValue, onChangeImg, onClear}) =>
         
         if (gradient.top && gradient.bot) {
             const linearGradient = `linear-gradient(${gradient.top},${gradient.bot})`;
-            onChangeValue('background', linearGradient);
+            onChangeValue('background')(linearGradient);
 
             setBackColor(defaultBackColor);
         }
@@ -72,13 +72,25 @@ const Form = ({bannerConfig, bannerRef, onChangeValue, onChangeImg, onClear}) =>
     const [backColor, setBackColor] = React.useState(defaultBackColor);
     const handlerChangeBackColor = (value) => {
         setBackColor(value);
-        onChangeValue('background', value);
+        onChangeValue('background')(value);
 
         setGradient(defaultGradient);
     };    
 
     return (
         <form className="form">
+            <Settinger title='Размер'>
+                <Text 
+                    placeholder="Высота"
+                    value={bannerConfig.height || ''}
+                    onChange={onChangeValue('height')}
+                />
+                <Text 
+                    placeholder="Ширина"
+                    value={bannerConfig.width || ''}
+                    onChange={onChangeValue('width')}
+                />
+            </Settinger>
             <Settinger title='Фон'>
                 <Color 
                     value={backColor}
@@ -104,19 +116,19 @@ const Form = ({bannerConfig, bannerRef, onChangeValue, onChangeImg, onClear}) =>
             <Settinger title="Текст">
                 <Color 
                     value={bannerConfig.textColor}
-                    onChange={onChangeValue.bind(null,'textColor')}
+                    onChange={onChangeValue('textColor')}
                 />
                 <Text 
                     placeholder="Введите текст"
                     value={bannerConfig.text || ''}
-                    onChange={onChangeValue.bind(null,'text')}
+                    onChange={onChangeValue('text')}
                 />
             </Settinger>
             <Settinger title="Ссылка">
                 <Text 
                     placeholder="Введите ссылку"
                     value={bannerConfig.link || ''}
-                    onChange={onChangeValue.bind(null,'link')}
+                    onChange={onChangeValue('link')}
                 />
             </Settinger>
             <Settinger title="Экспорт">
