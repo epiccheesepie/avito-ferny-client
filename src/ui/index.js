@@ -4,3 +4,4 @@ export { default as File } from './File';
 export { default as Gradient } from './Gradient';
 export { default as Settinger } from './Settinger';
 export { default as Text } from './Text';
+export { default as FontFamily } from './FontFamily';

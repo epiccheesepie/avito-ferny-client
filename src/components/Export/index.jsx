@@ -3,7 +3,8 @@ import html2canvas from 'html2canvas';
 
 import { namePng } from '../../utils';
 
-const Export = ({bannerConfig, bannerBlock, disabled}) => {
+const Export = ({option}) => {
+    const {bannerConfig, bannerBlock, disabled} = option;
 
     const handlerClickPNG = _ => {
     

@@ -1,7 +1,8 @@
 import React from 'react';
 import './File.css';
 
-const File = ({onChange, fileName}) => {
+const File = ({option}) => {
+    const {onChange, fileName} = option;
 
     return (
         <div className="form__item--small">

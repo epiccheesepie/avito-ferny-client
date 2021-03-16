@@ -1,7 +1,7 @@
 import React from 'react';
 import './Form.css';
 
-import { Settinger, Color, File, Gradient, Text } from '../../ui';
+import { Settinger, Color, File, Gradient, Text, FontFamily } from '../../ui';
 import { Export } from '..';
 import { isEmpty } from '../../utils';
 
@@ -75,73 +75,161 @@ const Form = ({bannerConfig, bannerRef, onChangeValue, onChangeImg, onClear}) =>
         onChangeValue('background')(value);
 
         setGradient(defaultGradient);
-    };    
+    };
+    
+    const [activeItem, setActiveItem] = React.useState(null); //активный сеттингер на данный момент
+    const handlerClickActive = (index) => _ => {
+        setActiveItem(index);
+    };
+    const menu = [ //объектная модель основного меню
+        {
+            title: 'Размер',
+            properties: [
+                {
+                    Ui: Text,
+                    option: {
+                        placeholder: 'Высота',
+                        value: bannerConfig.height || '',
+                        onChange: onChangeValue('height')
+                    }
+                },
+                {
+                    Ui: Text,
+                    option: {
+                        placeholder: 'Ширина',
+                        value: bannerConfig.width || '',
+                        onChange: onChangeValue('width')
+                    }
+                }
+            ]
+        },
+        {
+            title: 'Фон',
+            col: true,
+            properties: [
+                {
+                    Ui: Color,
+                    option: {
+                        value: backColor,
+                        onChange: handlerChangeBackColor
+                    }
+                },
+                {
+                    Ui: Gradient,
+                    option: {
+                        onChange: handlerChangeGradient,
+                        top: gradient.top,
+                        bot: gradient.bot
+                    }
+                }
+            ]
+        },
+        {
+            title: 'Картинка',
+            col: true,
+            properties: [
+                {
+                    Ui: File,
+                    option: {
+                        fileName: fileName,
+                        onChange: handlerLoadImg
+                    }
+                },
+                {
+                    Ui: Text,
+                    option: {
+                        placeholder: 'Ссылка на картинку...',
+                        value: imgLink,
+                        onChange: handlerTextImg
+                    }
+                }
+            ]
+        },
+        {
+            title: 'Текст',
+            col: true,
+            properties: [
+                {
+                    Ui: Text,
+                    option: {
+                        placeholder: 'Введите текст...',
+                        value: bannerConfig.text || '',
+                        onChange: onChangeValue('text')
+                    }
+                },
+                {
+                    Ui: Color,
+                    option: {
+                        value: bannerConfig.textColor,
+                        onChange: onChangeValue('textColor')
+                    }
+                },
+                {
+                    Ui: FontFamily,
+                    option: {
+                        value: bannerConfig.fontFamily,
+                        handler: onChangeValue('fontFamily')
+                    }
+                }
+            ]
+        },
+        {
+            title: 'Ссылка',
+            col: true,
+            properties: [
+                {
+                    Ui: Text,
+                    option: {
+                        placeholder: 'Ссылка баннера...',
+                        value: bannerConfig.link || '',
+                        onChange: onChangeValue('link')
+                    }
+                }
+            ]
+        },
+        {
+            title: 'Экспорт',
+            col: true,
+            properties: [
+                {
+                    Ui: Export,
+                    option: {
+                        bannerConfig: bannerConfig,
+                        bannerBlock: bannerRef.current,
+                        disabled: isEmpty(bannerConfig)
+                    }
+                }
+            ]
+        }
+    ];
 
     return (
         <form className="form">
-            <Settinger title='Размер'>
-                <Text 
-                    placeholder="Высота"
-                    value={bannerConfig.height || ''}
-                    onChange={onChangeValue('height')}
-                />
-                <Text 
-                    placeholder="Ширина"
-                    value={bannerConfig.width || ''}
-                    onChange={onChangeValue('width')}
-                />
-            </Settinger>
-            <Settinger title='Фон'>
-                <Color 
-                    value={backColor}
-                    onChange={handlerChangeBackColor}
-                />
-                <Gradient 
-                    onChange={handlerChangeGradient}
-                    top={gradient.top}
-                    bot={gradient.bot}
-                />
-            </Settinger>
-            <Settinger title='Картинка'>
-                <File 
-                    onChange={handlerLoadImg}
-                    fileName={fileName}
-                />
-                <Text 
-                    placeholder="Ссылка..."
-                    value={imgLink}
-                    onChange={handlerTextImg}
-                />
-            </Settinger>
-            <Settinger title="Текст">
-                <Color 
-                    value={bannerConfig.textColor}
-                    onChange={onChangeValue('textColor')}
-                />
-                <Text 
-                    placeholder="Введите текст"
-                    value={bannerConfig.text || ''}
-                    onChange={onChangeValue('text')}
-                />
-            </Settinger>
-            <Settinger title="Ссылка">
-                <Text 
-                    placeholder="Введите ссылку"
-                    value={bannerConfig.link || ''}
-                    onChange={onChangeValue('link')}
-                />
-            </Settinger>
-            <Settinger title="Экспорт">
-                <Export 
-                    bannerConfig={bannerConfig}
-                    bannerBlock={bannerRef.current}
-                    disabled={isEmpty(bannerConfig)}
-                />
-            </Settinger>
+            {
+                menu.map(({title, col, properties}, index) => {
+                    return (
+                        <Settinger 
+                            key={title} 
+                            title={title} 
+                            col={col}
+                            active={activeItem === index}
+                            onClick={handlerClickActive(index)}
+                        >
+                            {properties.map(({Ui, option}, index) => {
+                                return (
+                                    <Ui key={Ui.constructor.name + index} option={option} />
+                                );
+                            })}
+                        </Settinger>
+                    );
+                })
+            }
             {isClear && (
                 <div className="form__item clear">
-                    <span className="form__title button" onClick={_ => onClear()}>
-                        Очистить
+                    <span className="button" onClick={_ => onClear()}>
+                        <div className="form__title">
+                            Очистить
+                        </div>
                     </span>
                 </div>
             )}

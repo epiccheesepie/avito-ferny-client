@@ -1,7 +1,8 @@
 import React from 'react';
 import './Color.css';
 
-const Color = ({value, onChange}) => {
+const Color = ({option}) => {
+    const {value, onChange} = option;
 
     return (
         <label className="form__item--small button button--left">

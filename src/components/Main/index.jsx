@@ -1,6 +1,7 @@
 import React from 'react';
 import './Main.css';
 import { Form, Banner } from '..';
+import { Header } from '../../ui';
 
 const Main = _ => {
 
@@ -48,29 +49,37 @@ const Main = _ => {
 
     return (
         <div className="content">
-            <div className="left">
+            <header>
                 <div className="container">
-                    <Form 
-                        bannerConfig={bannerConfig}
+                    <Header />
+                </div>
+            </header>
+            <main>
+                <div className="left">
+                    <div className="container">
+                        <Form 
+                            bannerConfig={bannerConfig}
+                            bannerRef={bannerRef}
+                            onChangeValue={handlerChangeValue}
+                            onChangeImg={handlerChangeImg}
+                            onClear={handlerClearConfig}
+                        />
+                    </div>
+                </div>
+
+                <div className="right">
+                    <Banner
+                        height={bannerConfig.height}
+                        width={bannerConfig.width}
+                        background={bannerConfig.background}
+                        text={bannerConfig.text}
+                        textColor={bannerConfig.textColor}
+                        fontFamily={bannerConfig.fontFamily}
+                        img={bannerConfig.img}
                         bannerRef={bannerRef}
-                        onChangeValue={handlerChangeValue}
-                        onChangeImg={handlerChangeImg}
-                        onClear={handlerClearConfig}
                     />
                 </div>
-            </div>
-
-            <div className="right">
-                <Banner
-                    height={bannerConfig.height}
-                    width={bannerConfig.width}
-                    background={bannerConfig.background}
-                    text={bannerConfig.text}
-                    textColor={bannerConfig.textColor}
-                    img={bannerConfig.img}
-                    bannerRef={bannerRef}
-                />
-            </div>
+            </main>
         </div>
     );
 };

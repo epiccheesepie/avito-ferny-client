@@ -1,6 +1,7 @@
 import React from 'react';
 
-const Gradient = ({onChange, top, bot}) => {
+const Gradient = ({option}) => {
+    const {onChange, top, bot} = option;
 
     return (
         <div className="form__item--small button button--left button--disabled">
