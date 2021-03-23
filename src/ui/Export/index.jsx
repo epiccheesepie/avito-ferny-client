@@ -1,10 +1,11 @@
 import React from 'react';
 import html2canvas from 'html2canvas';
 
-import { namePng } from '../../utils';
+import { namePng, isEmpty } from '../../utils';
 
-const Export = ({option}) => {
-    const {bannerConfig, bannerBlock, disabled} = option;
+const Export = ({bannerConfig, bannerBlock}) => {
+    
+    const disabled = isEmpty(bannerConfig);
 
     const handlerClickPNG = _ => {
     
@@ -59,20 +60,19 @@ const Export = ({option}) => {
         {value: 'HTML', handler: handlerClickHTML},
         {value: 'JSON', handler: handlerClickJSON}
     ];
-    const renderMethods = methods.map(({value, handler}) => {
-        return (
-            <ButtonExport 
-                key={value}
-                value={value}
-                onClick={handler}
-                disabled={disabled}
-            />
-        );
-    });
 
     return (
         <React.Fragment>
-            {renderMethods}
+            {methods.map(({value, handler}) => {
+                return (
+                    <ButtonExport 
+                        key={value}
+                        value={value}
+                        onClick={handler}
+                        disabled={disabled}
+                    />
+                );
+            })}
         </React.Fragment>
     );
 };
@@ -82,7 +82,7 @@ const ButtonExport = ({value,onClick,disabled}) => {
     return (
         <div className="form__item--small">
             <input
-                className={`button button--center ${disabled ? 'button--disabled' : ''}`}
+                className={`button button--small ${disabled ? 'button--disabled' : ''}`}
                 type="button"
                 value={value}
                 onClick={onClick}

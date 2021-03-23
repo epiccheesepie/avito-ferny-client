@@ -1,12 +1,11 @@
 import React from 'react';
 import './Color.css';
 
-const Color = ({option}) => {
-    const {value, onChange} = option;
+const Color = ({value, onChange}) => {
 
     return (
-        <label className="form__item--small button button--left">
-            <span className="small-title">Цвет</span>
+        <label className="form__item--small button button--small">
+            <span className="form__title--small">Цвет</span>
             <div className="option">
                 <input className="form__color"
                     type="color"

@@ -17,7 +17,7 @@
 .form__option {
     padding: 8px;
     box-sizing: border-box;
-    transition: .2s ease-in-out;
+    transition: var(--timing);
     border-radius: 6px;
 }
 .form__option:hover {

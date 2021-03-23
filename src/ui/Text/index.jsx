@@ -1,8 +1,7 @@
 import React from 'react';
 import './Text.css';
 
-const Text = ({option}) => {
-    const {placeholder, value, onChange} = option;
+const Text = ({placeholder, value, onChange}) => {
 
     return (
         <div className="form__item--small">

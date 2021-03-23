@@ -6,8 +6,7 @@
     width: 88px;
     height: 48px;
     outline: none;
-    border-radius: 24px;
-    transition: .2s;
+    transition: var(--timing);
 }
 input[type="color"]::-webkit-color-swatch-wrapper {
     padding: 0;

@@ -1,13 +1,12 @@
 import React from 'react';
 import './File.css';
 
-const File = ({option}) => {
-    const {onChange, fileName} = option;
+const File = ({onChange, fileName}) => {
 
     return (
         <div className="form__item--small">
             <div className="option">
-                <label className="button button--center">
+                <label className="button button--small">
                     {fileName}
                     <input
                         className="form__file"

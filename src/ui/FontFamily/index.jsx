@@ -8,8 +8,7 @@ const fonts = [
     'Montserrat'
 ];
 
-const FontFamily = ({option}) => {
-    const {handler, value} = option;
+const FontFamily = ({handler, value}) => {
 
     const [open, setOpen] = React.useState(false);
     const handlerClickOpen = _ => {
@@ -21,8 +20,8 @@ const FontFamily = ({option}) => {
     };
 
     return (
-        <label className="form__item--small button button--left" onClick={handlerClickOpen}>
-            <span className="small-title form__arrow--small">{(value || 'Шрифт')}</span>
+        <label className="form__item--small button button--small" onClick={handlerClickOpen}>
+            <span className="form__title--small form__arrow--small">{(value || 'Шрифт')}</span>
             {open && (
             <div className="form__select">
                 {fonts.map(font => {

@@ -1,4 +1,28 @@
 .banner-container {
+    display: flex;
+    flex-direction: column;
+}
+.banner-clear {
+    display: flex;
+    justify-content: center;
+    margin-top: 14px;
+}
+.banner-clear button {
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-family: 'Fira Sans Condensed', sans-serif;
+    font-size: 1em;
+    padding: 10px 20px;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    background-color: #ff6767a8;
+    transition: .2s ease-in-out;
+}
+.banner-clear button:hover {
+    background-color: #d94646a8;
+}
+.banner-option {
     box-shadow: var(--shadow);
     border-radius: 12px;
     overflow: hidden;
@@ -27,6 +51,7 @@
     -ms-hyphens: auto;
     hyphens: auto;
     z-index: 1;
+    text-shadow: 1px 1px 4px #909090;
 }
 .banner__img {
     cursor: move;

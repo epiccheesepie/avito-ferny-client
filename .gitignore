@@ -4,8 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
-/public/1.jpg
-/public/1.png
+/demo
 /q.txt
 
 # testing
