@@ -1,19 +1,20 @@
-<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/public/ferny.png' height='60' alt='Ferny Logo' />
+<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/test/public/ferny.png' height='60' alt='Ferny Logo' />
 
 Ferny - это приложения для создания однотипных баннеров.
 
-Это может использоваться в любой сфере, где необходимы однотипные картинки, для примера, он может использоваться для создания картинок в приложениях доставки еды
+Это может использоваться в любой сфере, где необходимы однотипные картинки. Для примера, он может использоваться для создания картинок в приложениях доставки еды.
 
 ## Пример
 <div style="display: flex;">
-<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/demo/banner_69ej.png' alt='fruits' />
-<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/demo/banner_1egu.png' alt='bread' />
+<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/test/demo/banner_69ej.png' alt='fruits' />
+<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/test/demo/banner_1egu.png' alt='bread' />
 </div>
 
 ## Интерфейс
-Масштаб 150%
+<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/test/demo/interface.png' alt='Interface' />
 
-<img src='https://raw.githubusercontent.com/epiccheesepie/ferny/demo/interface.png' alt='Interface' />
+## Стек
+- ReactJS
 
 ## Возможности и ограничения
 
@@ -39,5 +40,5 @@ Ferny - это приложения для создания однотипных
 ### Экспорт
 - Экспорт доступен в трех форматах [png, html, json].
 
-## Первоначальное ТЗ
+## ТЗ
 https://github.com/avito-tech/vas-frontend-trainee-assignment

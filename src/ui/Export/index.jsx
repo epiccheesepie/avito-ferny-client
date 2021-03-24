@@ -43,16 +43,24 @@ const Export = ({bannerConfig, bannerBlock}) => {
                 html = `<img src="${dataURI}" />`;
             }
 
-            navigator.clipboard.writeText(html);
-            alert('HTML разметка баннера скопирована в буфер обмена');
+            if (typeof(navigator.clipboard) === 'undefined') {
+                alert('Конфигурация баннера не может быть скопирована в буфер обмена, т.к. отсутствует безопастное подключение');
+            } else {
+                navigator.clipboard.writeText(html);
+                alert('HTML разметка баннера скопирована в буфер обмена');
+            }
 
         });
     };
 
     const handlerClickJSON = _ => {
         const parse = JSON.stringify(bannerConfig);
-        navigator.clipboard.writeText(parse);
-        alert('Конфигурация баннера скопирована в буфер обмена');
+        if (typeof(navigator.clipboard) === 'undefined') {
+            alert('Конфигурация баннера не может быть скопирована в буфер обмена, т.к. отсутствует безопастное подключение');
+        } else {
+            navigator.clipboard.writeText(parse);
+            alert('Конфигурация баннера скопирована в буфер обмена');
+        }
     };
 
     const methods = [
